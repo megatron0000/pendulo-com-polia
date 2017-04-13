@@ -3,9 +3,6 @@
 BeginPackage["Importador`"];
 
 
-$ContextPath
-
-
 << TrackerImport`;
 
 
@@ -85,8 +82,8 @@ QuantasTomadas[] = 3;
 Listar[tomada_, x__]:=Module[{listaFiltrada, pedidos, interpolador},
 	pedidos = {x};
 	interpolador[enupla_] := Parte[enupla,#]&/@pedidos;
-	listaFiltrada = interpolador/@dados[tomada];
-	listaFiltrada
+	listaFiltrada = interpolador/@(dados[tomada]);
+	If[Length[Part[listaFiltrada,1]]>1, listaFiltrada, Flatten[listaFiltrada]]
 ];
 
 

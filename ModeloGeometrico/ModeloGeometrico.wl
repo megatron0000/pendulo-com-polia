@@ -3,10 +3,12 @@
 BeginPackage["ModeloGeometrico`"];
 
 
-X::usage = "X[raioPolia,comprimentoFio,funcaoAngulo] retorna uma fun\[CCedilla]\[ATilde]o que associa a cada tempo 't' uma posi\[CCedilla]\[ATilde]o 'x' da massa oscilante (origem no centro da polia)";
+X::usage = "X[raioPolia,comprimentoFio,funcaoAngulo] retorna uma fun\[CCedilla]\[ATilde]o que associa a cada tempo 't' uma posi\[CCedilla]\[ATilde]o 'x' da 
+massa oscilante (origem no centro da polia)";
 
 
-Y::usage = "Y[raioPolia,comprimentoFio,funcaoAngulo] retorna uma fun\[CCedilla]\[ATilde]o que associa a cada tempo 't' uma posi\[CCedilla]\[ATilde]o 'y' da massa oscilante (origem no centro da polia)";
+Y::usage = "Y[raioPolia,comprimentoFio,funcaoAngulo] retorna uma fun\[CCedilla]\[ATilde]o que associa a cada tempo 't' uma posi\[CCedilla]\[ATilde]o 'y' da 
+massa oscilante (origem no centro da polia)";
 
 
 Begin["Private`"];
