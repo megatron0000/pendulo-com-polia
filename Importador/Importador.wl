@@ -3,6 +3,9 @@
 BeginPackage["Importador`"];
 
 
+<< VarCleanup`;
+
+
 << TrackerImport`;
 
 
@@ -43,30 +46,32 @@ Parte[lista_, parte_]:=lista[[parte/.formato]];
 
 r = (Import[dir<>"raio-polia", "Table"]//Flatten)[[1]];
 massa = (Import[dir<>"massa", "Table"]//Flatten)[[1]];
-L0=(Import[dir<>"comprimento-fio", "Table"]//Flatten)[[1]];
+L0[1]=(Import[dir<>"comprimento-fio-1", "Table"]//Flatten)[[1]];
+L0[2]=(Import[dir<>"comprimento-fio-2", "Table"]//Flatten)[[1]];
+L0[3]=(Import[dir<>"comprimento-fio-3", "Table"]//Flatten)[[1]];
 
 
 tamanhoFio[posicao_]:=Sqrt[posicao^2-r^2];
 concatenarFio[lista_]:=Join[#, {tamanhoFio[ Parte[#,"r"] ]}]&/@lista;
 
 
-x[t_]:=X[r, L0, \[Theta][t]]
-y[t_]:=Y[r, L0, \[Theta][t]]
+x[t_, tomada_]:=X[r, L0[tomada], \[Theta][t]]
+y[t_, tomada_]:=Y[r, L0[tomada], \[Theta][t]]
 
 
-phiParaTheta[phi_]=Module[{x1,y1,phiComTheta,modelo},
-	x1= Replace[x[t],\[Theta][t_]:> \[Theta], All];
-	y1 = Replace[y[t],\[Theta][t_]:> \[Theta], All];
-	phiComTheta = Table[{ArcTan[x1,y1],\[Theta]},{\[Theta],-45\[Degree],+45\[Degree],0.01\[Degree]}];
+For[i=1, i<=3, i=i+1, phiParaTheta[phi_, i]=Module[{x1,y1,phiComTheta,modelo},
+	x1= Replace[x[t, i],\[Theta][t_]:> \[Theta], All];
+	y1 = Replace[y[t, i],\[Theta][t_]:> \[Theta], All];
+	phiComTheta = Table[{ArcTan[x1,y1]/.\[Theta]->theta,theta},{theta,-45\[Degree],+45\[Degree],0.01\[Degree]}];
 	modelo = LinearModelFit[phiComTheta, \[Phi],\[Phi] ];
 	modelo
-][phi];
-concatenarTheta[lista_]:=Join[#, {phiParaTheta[Parte[#, "\[Phi]"]*\[Pi]/180]}]&/@lista;
+][phi]]
+concatenarTheta[lista_, tomada_]:=Join[#, {phiParaTheta[Parte[#, "\[Phi]"]*\[Pi]/180, tomada]}]&/@lista;
 
 
-dados[1] = TrackerImport[dir<>"tabela-cinematica-1"]//concatenarFio//concatenarTheta;
-dados[2] = TrackerImport[dir<>"tabela-cinematica-2"]//concatenarFio//concatenarTheta;
-dados[3] = TrackerImport[dir<>"tabela-cinematica-3"]//concatenarFio//concatenarTheta;
+dados[1] = TrackerImport[dir<>"tabela-cinematica-1"]//concatenarFio//(concatenarTheta[#,1]&);
+dados[2] = TrackerImport[dir<>"tabela-cinematica-2"]//concatenarFio//(concatenarTheta[#,2]&);
+dados[3] = TrackerImport[dir<>"tabela-cinematica-3"]//concatenarFio//(concatenarTheta[#,3]&);
 
 
 (* ::Section:: *)
@@ -87,8 +92,8 @@ Listar[tomada_, x__]:=Module[{listaFiltrada, pedidos, interpolador},
 ];
 
 
-Pegar[parametro_]:=
-	If[parametro=="comprimento do fio", L0,
+Pegar[tomada_ ,parametro_]:=
+	If[parametro=="comprimento do fio", L0[tomada],
 	If[parametro=="raio da polia", r,
 	If[parametro=="massa oscilante", massa,
 	"desconhecido"

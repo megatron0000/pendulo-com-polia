@@ -7,8 +7,9 @@ BeginPackage["ModeloEDO`"];
 << PenduloComPolia`ModeloGeometrico`;
 
 
-SolucaoNumerica::usage = "SolucaoNumerica[tempoInicial,tempoFinal,funcaoAngulo] retorna uma express\[ATilde]o para o \[AHat]ngulo, dependente de s\[IAcute]mbolo
- 'funcaoAngulo'";
+SolucaoNumerica::usage = "SolucaoNumerica[tomada,{angulo[tempo1]== anguloInicial, angulo'[tempo1]==velocidadeInicial},{tempo,tempoInicial, tempoFinal}] 
+retorna uma express\[ATilde]o para o \[AHat]ngulo em fun\[CCedilla]\[ATilde]o do s\[IAcute]mbolo 'tempo' fornecido";
+g::usage="Acelera\[CCedilla]\[ATilde]o gravitacional (n\[UAcute]mero)";
 
 
 Begin["Private`"];
@@ -18,30 +19,34 @@ Begin["Private`"];
 (*Estado interno*)
 
 
-r = Pegar["raio da polia"];
-L0 = Pegar["comprimento do fio"];
-m = Pegar["massa oscilante"];
-g = 9.784;
+r = Pegar[1, "raio da polia"]
+For[i=1, i<= QuantasTomadas[], i=i+1, L0[i] = Pegar[i,"comprimento do fio"]]
+m = Pegar[1, "massa oscilante"]
+g = 9.784
 
 
-x[t_]=X[r,L0,\[Theta][t]];
-y[t_]=Y[r,L0,\[Theta][t]];
+x[t_, tomada_]=X[r,L0[tomada],\[Theta][t]]
+y[t_,tomada_]=Y[r,L0[tomada],\[Theta][t]]
 
 
 (* ::Text:: *)
 (*Publica\[CCedilla]\[ATilde]o*)
 
 
-SolucaoNumerica[{angulo_[tempo1_]== anguloInicial_, angulo_'[tempo1_]==velocidadeInicial_},{tempo_,tempoInicial_, tempoFinal_}] := 
+SolucaoNumerica[
+tomada_,
+{angulo_[tempo1_]== anguloInicial_, angulo_'[tempo1_]==velocidadeInicial_},
+{tempo_,tempoInicial_, tempoFinal_}] := 
 Flatten[Values[(NDSolve[{
-	m*y''[t]== T[t]*Cos[\[Theta][t]]-m*g,
-	m*x''[t]== -T[t]*Sin[\[Theta][t]],
-	\[Theta][0]== anguloInicial, (* Necess\[AAcute]rio converter para \[Theta] como definido no modelo matem\[AAcute]tico (em oposi\[CCedilla]\[ATilde]o \[AGrave] defini\[CCedilla]\[ATilde]o \[Phi] do Tracker) *)
-	\[Theta]'[0]== velocidadeInicial
+	(* \[Theta]''[t]== (r*\[Theta]'[t]^2-g*Sin[\[Theta][t]])/(L0[tomada]-r*\[Theta][t]), *)
+	m*D[y[t,tomada],{t,2}]== T[t]*Cos[\[Theta][t]]-m*g,
+	m*D[x[t,tomada],{t,2}]== -T[t]*Sin[\[Theta][t]],
+	\[Theta][tempo1]== anguloInicial,
+	\[Theta]'[tempo1]== velocidadeInicial
 	},
-	{\[Theta][t],T[t]},
+	{\[Theta][t], T[t]},
 	{t,tempoInicial,tempoFinal}
-	]//Flatten)[[1]]]]/.t->tempo;
+	]//Flatten)[[1]]]]/.t->tempo
 
 
 End[];
