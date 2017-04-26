@@ -1,0 +1,3 @@
+[submodule "mathematica-utils"]
+	path = mathematica-utils
+	url = https://github.com/megatron0000/mathematica-utils.git
