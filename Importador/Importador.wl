@@ -76,7 +76,7 @@ For[i=1, FileExistsQ@FileNameJoin@{dir,"tabela-cinematica-"<>ToString@i}, i=i+1,
 	limites = LerLista["limites-tabela-cinematica-"<>ToString@i];
 	dados[i] = Select[dados[i], #[[1]] <= If[Length@limites == 2, Last@limites, \[Infinity]]&];
 	dados[i] = Select[dados[i], #[[1]] >= First@limites&];
-	dados[i] = Map[Join[{First@# - First@limites}, Most@#]&, dados[i]];
+	dados[i] = Map[Join[{First@# - First@limites}, Rest@#]&, dados[i]];
 ];
 quantTomadas = i-1;
 
@@ -109,22 +109,6 @@ For[i=1,i<=quantTomadas,i=i+1,
 (* Usa interpola\[CCedilla]\[ATilde]o linear constru\[IAcute]da para acoplar medidas de \[Theta] \[AGrave] lista cinem\[AAcute]tica *)
 concatenarTheta[lista_, tomada_]:=Map[Join[#, {phiParaTheta[Parte[#, "\[Phi]"]*\[Pi]/180, tomada]}]&,lista];
 
-
-(*
-	(* Gambiarra *)
-	aux = TrackerImport[FileNameJoin[{dir,"tabela-cinematica-1"}]]//concatenarFio//(concatenarTheta[#,1]&);
-	For[i=1,i<=Length[aux],i=i+1,
-		aux[[i]][[1]]=aux[[i]][[1]]-14.139;
-	];
-	dados[1]=Select[aux,#[[1]]>=0&];
-	
-	(* Gambiarra *)
-	aux = TrackerImport[FileNameJoin[{dir,"tabela-cinematica-2"}]]//concatenarFio//(concatenarTheta[#,1]&);
-	For[i=1,i<=Length[aux],i=i+1,
-		aux[[i]][[1]]=aux[[i]][[1]]-25.3125;
-	];
-	dados[2]=Select[aux,#[[1]]>=0&];
-*)
 
 For[i = 1, i <= quantTomadas, i = i+1,
 	dados[i] = concatenarTheta[dados[i],i]
