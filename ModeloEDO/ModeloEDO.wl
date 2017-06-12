@@ -3,20 +3,20 @@
 BeginPackage["ModeloEDO`"];
 
 
-<< PenduloComPolia`Importador`;
-<< PenduloComPolia`ModeloGeometrico`;
-
-
 SolucaoNumerica::usage = "SolucaoNumerica[tomada,{angulo[tempo1]== anguloInicial, angulo'[tempo1]==velocidadeInicial},{tempo,tempoInicial, tempoFinal}] 
 retorna uma express\[ATilde]o para o \[AHat]ngulo em fun\[CCedilla]\[ATilde]o do s\[IAcute]mbolo 'tempo' fornecido";
 g::usage="Acelera\[CCedilla]\[ATilde]o gravitacional (n\[UAcute]mero)";
 
 
+(* ::Chapter:: *)
+(*Interno*)
+
+
 Begin["Private`"];
 
 
-(* ::Text:: *)
-(*Estado interno*)
+<< PenduloComPolia`Importador`;
+<< PenduloComPolia`ModeloGeometrico`;
 
 
 r = Pegar[1, "raio da polia"]
